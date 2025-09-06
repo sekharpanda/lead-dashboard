@@ -1,14 +1,16 @@
-### OCR.space setup (for image → spend extraction on Streamlit Cloud)
+## Setup notes (OCR.space + Streamlit Cloud)
 
-This app calls OCR.space when a spend image is uploaded. OCR.space is used because Streamlit Cloud cannot install system Tesseract.
+This app uses OCR.space for image OCR (recommended on Streamlit Cloud because Tesseract binary cannot be installed there).
 
-1. Get a free API key at https://ocr.space/ocrapi (free tier available).
-2. In Streamlit Cloud:
-   - Open your deployed app -> Manage app -> Settings -> Secrets.
-   - Add a secret named: `OCR_SPACE_API_KEY` with your key value.
-   - Example: `OCR_SPACE_API_KEY="your_api_key_here"`
-3. Commit `requirements.txt` and `app.py` to the repo. Streamlit Cloud will install the listed packages automatically on deployment.
+1. Get OCR.space API key: https://ocr.space/ocrapi (free tier available).
+2. In Streamlit Cloud -> Manage app -> Settings -> Secrets, add:
+   OCR_SPACE_API_KEY="your_api_key_here"
+3. Commit `app.py` and `requirements.txt` to your repo and let Streamlit Cloud deploy.
+4. Upload Leads (CSV/XLSX) and either a spend file (CSV/XLSX) or a spend image (JPG/PNG) to the app. Follow the editable steps:
+   - Verify OCR-extracted spend rows
+   - Confirm spend->lead campaign mapping
+   - Click Apply mapping to merge and download outputs (merged Excel, aggregates, PDF report)
 
 Notes:
-- OCR accuracy depends on image clarity. Crop/rotate images to include only the table and ensure text is readable.
-- If you prefer local OCR (Tesseract), run the app locally and install `pytesseract` + the Tesseract binary on your machine.
+- OCR accuracy depends on image clarity. Crop to table and use high-res images.
+- If you run locally and want local OCR: install Tesseract (system binary) + `pytesseract` and the app will attempt local OCR first.
