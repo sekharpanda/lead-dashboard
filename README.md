@@ -1,17 +1,14 @@
-# Lead Dashboard Generator
+### OCR.space setup (for image → spend extraction on Streamlit Cloud)
 
-Upload your leads CSV/XLSX and generate:
-- 3 bar charts (Leads, Spend, CPL)
-- 1 pie chart (Sentiment)
-- Highlights block
-- Downloadable PNG
+This app calls OCR.space when a spend image is uploaded. OCR.space is used because Streamlit Cloud cannot install system Tesseract.
 
-## Run locally
-pip install -r requirements.txt
-streamlit run app.py
+1. Get a free API key at https://ocr.space/ocrapi (free tier available).
+2. In Streamlit Cloud:
+   - Open your deployed app -> Manage app -> Settings -> Secrets.
+   - Add a secret named: `OCR_SPACE_API_KEY` with your key value.
+   - Example: `OCR_SPACE_API_KEY="your_api_key_here"`
+3. Commit `requirements.txt` and `app.py` to the repo. Streamlit Cloud will install the listed packages automatically on deployment.
 
-## Deploy (Streamlit Cloud)
-1. Push this repo to GitHub.
-2. Go to https://share.streamlit.io and sign in with GitHub.
-3. Create a new app, select this repo and `app.py` as entrypoint.
-4. Deploy.
+Notes:
+- OCR accuracy depends on image clarity. Crop/rotate images to include only the table and ensure text is readable.
+- If you prefer local OCR (Tesseract), run the app locally and install `pytesseract` + the Tesseract binary on your machine.
