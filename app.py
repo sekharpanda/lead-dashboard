@@ -516,4 +516,25 @@ def main():
         merged.to_excel(merged_path, index=False)
         display_agg.to_excel(agg_path, index=False)
         with open(merged_path, "rb") as f:
-            st.download_button("Download merged leads Excel", f.read(), file_name="merged_leads_with_spend_and_flags.x_
+            st.download_button("Download merged leads Excel", f.read(), file_name="merged_leads_with_spend_and_flags.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        with open(agg_path, "rb") as f:
+            st.download_button("Download campaign aggregates", f.read(), file_name="campaign_aggregates_with_mismatch.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+
+        # PDF
+        try:
+            leads_buf = fig_to_buffer(fig1)
+            spend_buf = fig_to_buffer(fig2)
+            cpl_buf = fig_to_buffer(fig3)
+            charts = {"leads": leads_buf, "spend": spend_buf, "cpl": cpl_buf, "sent": sent_buf}
+            pdf_path = os.path.join(out_dir, f"campaign_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf")
+            build_pdf_report(charts, totals, display_agg, pdf_path)
+            with open(pdf_path, "rb") as f:
+                pdf_bytes = f.read()
+            st.download_button("Download PDF report", pdf_bytes, file_name="campaign_report.pdf", mime="application/pdf")
+        except Exception as e:
+            st.warning(f"PDF generation failed: {e}")
+
+        st.success("Report generated. If spend numbers still look missing, inspect the debug tables above (spend_mapped_df & spend aggregates) — they show exactly where spend exists and how it was mapped.")
+
+if __name__ == "__main__":
+    main()
