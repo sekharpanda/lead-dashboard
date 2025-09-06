@@ -1,5 +1,8 @@
+# Core
 streamlit
 pandas
-matplotlib
-openpyxl
 numpy
+matplotlib
+pillow
+requests
+openpyxl   # lets pandas read Excel (xlsx/xls)
