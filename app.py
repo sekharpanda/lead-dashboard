@@ -37,9 +37,22 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Define color scheme
+COLORS = {
+    'primary': '#1f77b4',
+    'secondary': '#ff7f0e', 
+    'success': '#2ca02c',
+    'warning': '#ffcc00',
+    'danger': '#d62728'
+}
+
 # Set style
 plt.style.use('seaborn-v0_8' if 'seaborn-v0_8' in plt.style.available else 'default')
-sns.set_palette("husl")
+# Set a nice color palette for matplotlib
+plt.rcParams['axes.prop_cycle'] = plt.cycler(color=[
+    COLORS['primary'], COLORS['secondary'], COLORS['success'], 
+    COLORS['warning'], COLORS['danger'], '#9467bd'
+])
 
 # Configuration
 @dataclass
@@ -392,7 +405,7 @@ class ReportGenerator:
         # 1. Leads per Campaign
         fig1, ax1 = plt.subplots(figsize=(10, 6))
         bars1 = ax1.bar(display_df["campaign_mapped"], display_df["leads_rows_count"], 
-                       color='skyblue', edgecolor='navy', linewidth=0.5)
+                       color=COLORS['primary'], edgecolor='navy', linewidth=0.5)
         ax1.set_title("Leads per Campaign", fontsize=16, fontweight='bold', pad=20)
         ax1.set_ylabel("Number of Leads", fontsize=12)
         ax1.set_xlabel("Campaign", fontsize=12)
@@ -412,7 +425,7 @@ class ReportGenerator:
         # 2. Spend per Campaign
         fig2, ax2 = plt.subplots(figsize=(10, 6))
         bars2 = ax2.bar(display_df["campaign_mapped"], display_df["spend_total"], 
-                       color='lightcoral', edgecolor='darkred', linewidth=0.5)
+                       color=COLORS['secondary'], edgecolor='darkred', linewidth=0.5)
         ax2.set_title("Spend per Campaign (₹)", fontsize=16, fontweight='bold', pad=20)
         ax2.set_ylabel("Spend Amount (₹)", fontsize=12)
         ax2.set_xlabel("Campaign", fontsize=12)
@@ -433,7 +446,7 @@ class ReportGenerator:
         fig3, ax3 = plt.subplots(figsize=(10, 6))
         cpl_data = display_df["CPL_computed"].fillna(0)
         bars3 = ax3.bar(display_df["campaign_mapped"], cpl_data, 
-                       color='gold', edgecolor='darkorange', linewidth=0.5)
+                       color=COLORS['warning'], edgecolor='darkorange', linewidth=0.5)
         ax3.set_title("Cost Per Lead (CPL) by Campaign", fontsize=16, fontweight='bold', pad=20)
         ax3.set_ylabel("CPL (₹)", fontsize=12)
         ax3.set_xlabel("Campaign", fontsize=12)
@@ -453,8 +466,8 @@ class ReportGenerator:
         # 4. Sentiment Analysis
         sentiment_data = ReportGenerator.analyze_sentiment(leads_df)
         fig4, ax4 = plt.subplots(figsize=(8, 6))
-        colors = ['#2E8B57', '#FFD700', '#DC143C']  # Green, Gold, Red
-        wedges, texts, autotexts = ax4.pie(sentiment_data.values, labels=sentiment_data.keys(), 
+        colors = [COLORS['success'], COLORS['warning'], COLORS['danger']]  # Green, Gold, Red
+        wedges, texts, autotexts = ax4.pie(sentiment_data.values(), labels=sentiment_data.keys(), 
                                           autopct='%1.1f%%', startangle=90, colors=colors)
         ax4.set_title("Lead Sentiment Distribution", fontsize=16, fontweight='bold')
         
@@ -1167,9 +1180,6 @@ class LeadAnalysisDashboard:
         
         # Visualizations
         st.subheader("📈 Performance Charts")
-        
-        # Create charts
-        charts = self.report_generator.create_charts(agg_df, leads_processed)
         
         # Display charts in columns
         col1, col2 = st.columns(2)
