@@ -1182,7 +1182,7 @@ class LeadAnalysisDashboard:
             if not top_campaigns.empty:
                 fig1, ax1 = plt.subplots(figsize=(10, 6))
                 bars = ax1.bar(top_campaigns["campaign_mapped"], top_campaigns["leads_rows_count"], 
-                              color='skyblue', edgecolor='navy', linewidth=0.5)
+                              color=COLORS['primary'], alpha=0.8, edgecolor='white', linewidth=0.5)
                 ax1.set_title("Top 10 Campaigns by Leads")
                 ax1.set_ylabel("Number of Leads")
                 plt.setp(ax1.get_xticklabels(), rotation=45, ha='right')
@@ -1205,7 +1205,7 @@ class LeadAnalysisDashboard:
             if not top_spend_campaigns.empty:
                 fig2, ax2 = plt.subplots(figsize=(10, 6))
                 bars = ax2.bar(top_spend_campaigns["campaign_mapped"], top_spend_campaigns["spend_total"], 
-                              color='lightcoral', edgecolor='darkred', linewidth=0.5)
+                              color=COLORS['secondary'], alpha=0.8, edgecolor='white', linewidth=0.5)
                 ax2.set_title("Top 10 Campaigns by Spend")
                 ax2.set_ylabel("Spend Amount (₹)")
                 plt.setp(ax2.get_xticklabels(), rotation=45, ha='right')
@@ -1229,7 +1229,7 @@ class LeadAnalysisDashboard:
             st.markdown("#### Cost Per Lead (CPL) Analysis")
             fig3, ax3 = plt.subplots(figsize=(12, 6))
             bars = ax3.bar(cpl_data["campaign_mapped"], cpl_data["CPL_computed"], 
-                          color='gold', edgecolor='darkorange', linewidth=0.5)
+                          color=COLORS['warning'], alpha=0.8, edgecolor='white', linewidth=0.5)
             ax3.set_title("CPL by Campaign")
             ax3.set_ylabel("CPL (₹)")
             plt.setp(ax3.get_xticklabels(), rotation=45, ha='right')
@@ -1250,7 +1250,7 @@ class LeadAnalysisDashboard:
         if sentiment_data:
             st.markdown("#### Lead Sentiment Distribution")
             fig4, ax4 = plt.subplots(figsize=(8, 6))
-            colors = ['#2E8B57', '#FFD700', '#DC143C']  # Green, Gold, Red
+            colors = [COLORS['success'], COLORS['warning'], COLORS['danger']]  # Green, Orange, Red
             wedges, texts, autotexts = ax4.pie(
                 sentiment_data.values(), 
                 labels=sentiment_data.keys(), 
