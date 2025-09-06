@@ -344,15 +344,31 @@ def main():
             else:
                 mapping_dict[sk] = None
 
-        # map spend rows to matched lead keys
+        # map spend rows to matched lead keys (defensive: always produce a __cmp_key)
         mapped = []
         for _, r in spend_df.iterrows():
-            sk = r["__cmp_key"]
-            target = mapping_dict.get(sk)
-            mapped.append({"__cmp_key": target, "spend_campaign_label": r["Campaign"], "reported_leads": int(r["Leads"]), "spend_total": float(r["Spend"])})
+            spend_key = simple_key(r["Campaign"])
+            target = mapping_dict.get(spend_key)
+            # fallback: if user didn't supply mapping, keep the spend campaign key so groupby won't fail
+            resolved_key = target if target else spend_key
+            mapped.append({
+                "__cmp_key": resolved_key,
+                "spend_campaign_label": r["Campaign"],
+                "reported_leads": int(r.get("Leads", 0)),
+                "spend_total": float(r.get("Spend", 0.0))
+            })
+
         spend_mapped_df = pd.DataFrame(mapped)
-        # create lookup
-        spend_lookup = spend_mapped_df.groupby("__cmp_key").agg(reported_leads=("reported_leads","sum"), spend_total=("spend_total","sum")).reset_index()
+
+        # safe groupby: handle empty df and keep rows with None-like keys
+        if not spend_mapped_df.empty:
+            spend_lookup = spend_mapped_df.groupby("__cmp_key", dropna=False).agg(
+                reported_leads=("reported_leads", "sum"),
+                spend_total=("spend_total", "sum")
+            ).reset_index()
+        else:
+            spend_lookup = pd.DataFrame(columns=["__cmp_key", "reported_leads", "spend_total"])
+
         # merge to leads by __cmp_key
         merged = leads_df.merge(spend_lookup, on="__cmp_key", how="left")
         merged["spend_total"] = merged["spend_total"].fillna(0.0)
